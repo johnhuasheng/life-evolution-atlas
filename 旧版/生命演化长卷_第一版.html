@@ -1,0 +1,707 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>body{margin:0}img{max-width:100%}</style>
+<title>生命演化长卷</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Noto+Sans+SC:wght@400;500;700&family=Noto+Serif+SC:wght@600;900&display=swap">
+<style>
+/* Layout：仿国际地质年代表的横向长卷——代/纪色带与主导植被在上，七条类群泳道居中，事件详情与时期概览双栏在下，最后是按年代排列的完整清单 */
+:root{
+  --bg:#ECEFEA; --surface:#F8F9F5; --ink:#17201B; --muted:#58645D; --line:#D1D7CE; --accent:#1C5B4E;
+  --ext:#B42318; --grid:rgba(23,32,27,.08); --pill:rgba(248,249,245,.95); --hl:rgba(28,91,78,.09);
+  --zone:rgba(23,32,27,.04); --shadow:0 1px 2px rgba(23,32,27,.08),0 6px 20px rgba(23,32,27,.06);
+  --c-plant:#3A8A3F; --c-sea:#2767A8; --c-amph:#0E8579; --c-rept:#B0601A; --c-bird:#7552B3; --c-mamm:#BE3448; --c-earth:#4B5259;
+  --veg1:#E1E8D6; --veg2:#D0E0BA; --veg3:#BCD7A1; --veg4:#A1C987; --veg5:#88B976; --veg6:#70A868; --veg7:#DCC873;
+  --f-display:"Noto Serif SC","Songti SC","STSong","SimSun",serif;
+  --f-body:"Noto Sans SC","PingFang SC","Microsoft YaHei",system-ui,sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,"SFMono-Regular",Menlo,Consolas,monospace;
+  --ease:cubic-bezier(.2,.7,.2,1);
+  --lw:96px;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#101412; --surface:#171C19; --ink:#E4E9E3; --muted:#98A39C; --line:#2C342F; --accent:#7FC8B5;
+    --ext:#FF8A7A; --grid:rgba(228,233,227,.07); --pill:rgba(23,28,25,.95); --hl:rgba(127,200,181,.12);
+    --zone:rgba(228,233,227,.04); --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.3);
+    --c-plant:#72C476; --c-sea:#6FA9EC; --c-amph:#4FC8BA; --c-rept:#E89D58; --c-bird:#AE91EA; --c-mamm:#F27D8E; --c-earth:#B9C0C7;
+    --veg1:#232B24; --veg2:#29372A; --veg3:#2F442D; --veg4:#355231; --veg5:#3A6035; --veg6:#3F6E3A; --veg7:#665B2D;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#101412; --surface:#171C19; --ink:#E4E9E3; --muted:#98A39C; --line:#2C342F; --accent:#7FC8B5;
+  --ext:#FF8A7A; --grid:rgba(228,233,227,.07); --pill:rgba(23,28,25,.95); --hl:rgba(127,200,181,.12);
+  --zone:rgba(228,233,227,.04); --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.3);
+  --c-plant:#72C476; --c-sea:#6FA9EC; --c-amph:#4FC8BA; --c-rept:#E89D58; --c-bird:#AE91EA; --c-mamm:#F27D8E; --c-earth:#B9C0C7;
+  --veg1:#232B24; --veg2:#29372A; --veg3:#2F442D; --veg4:#355231; --veg5:#3A6035; --veg6:#3F6E3A; --veg7:#665B2D;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font:15px/1.75 var(--f-body)}
+button{font-family:inherit;color:inherit}
+button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.page{max-width:1200px;margin:0 auto;padding-inline:clamp(16px,4vw,40px);padding-block:36px 64px}
+
+/* 标题 */
+.eyebrow{font:500 12px/1 var(--f-mono);letter-spacing:.14em;color:var(--accent);margin:0 0 14px}
+h1{font:900 clamp(2.3rem,5.4vw,3.8rem)/1.1 var(--f-display);letter-spacing:.06em;margin:0;text-wrap:balance}
+.lede{max-width:44em;color:var(--muted);margin:16px 0 0}
+.stats{display:flex;flex-wrap:wrap;gap:6px 22px;margin:14px 0 0;padding:0;list-style:none;font-size:13px;color:var(--muted)}
+.stats b{font:500 15px var(--f-mono);color:var(--ink);margin-right:4px}
+
+/* 控件 */
+.controls{display:flex;flex-wrap:wrap;gap:12px 20px;align-items:center;justify-content:space-between;margin-top:30px}
+.seg{display:inline-flex;flex-wrap:wrap;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:3px}
+.seg button{border:0;background:transparent;padding:5px 14px;border-radius:999px;font-size:13px;cursor:pointer;color:var(--muted)}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:3px 11px 3px 8px;font-size:13px;cursor:pointer}
+.chip i{width:9px;height:9px;border-radius:50%;background:var(--lc);box-shadow:inset 0 0 0 1.5px var(--lc)}
+.chip[aria-pressed="false"]{color:var(--muted);opacity:.6}
+.chip[aria-pressed="false"] i{background:transparent}
+.viewlabel{margin:12px 0 0;font-size:13px;color:var(--muted)}
+.viewlabel b{color:var(--ink);font-weight:500}
+
+/* 时间轴 */
+.tl-wrap{margin-top:10px;overflow-x:auto;border:1px solid var(--line);border-radius:14px;background:var(--surface);box-shadow:var(--shadow)}
+.tl{min-width:980px;position:relative}
+.row,.lane{display:grid;grid-template-columns:var(--lw) minmax(0,1fr)}
+.rl{position:sticky;left:0;z-index:6;background:var(--surface);font-size:12px;color:var(--muted);padding:0 10px 0 14px;display:flex;align-items:center;gap:7px;border-right:1px solid var(--line);line-height:1.3}
+.track{position:relative;overflow:hidden}
+.era-row .track{height:22px}
+.per-row .track{height:30px}
+.veg-row .track{height:24px}
+.per-row,.veg-row{border-top:1px solid var(--line)}
+.band{position:absolute;top:0;bottom:0;border:0;border-right:1px solid rgba(0,0,0,.2);padding:0;font:500 12px var(--f-body);cursor:pointer;display:flex;align-items:center;justify-content:center;overflow:hidden;white-space:nowrap;transition:left .6s var(--ease),width .6s var(--ease)}
+.era-row .band{font-size:11px;letter-spacing:.08em}
+.band.on{box-shadow:inset 0 0 0 2px currentColor}
+.band:focus-visible{outline:2px solid var(--accent);outline-offset:-3px}
+.veg{position:absolute;top:0;bottom:0;display:flex;align-items:center;justify-content:center;overflow:hidden;white-space:nowrap;font-size:11px;color:var(--ink);border-right:1px solid var(--surface);transition:left .6s var(--ease),width .6s var(--ease)}
+.lanes{position:relative}
+.overlay{position:absolute;top:0;bottom:0;left:var(--lw);right:0;pointer-events:none;overflow:hidden;z-index:0}
+.zone{position:absolute;top:0;bottom:0;background:var(--zone)}
+.zone.pre{background:repeating-linear-gradient(135deg,var(--grid) 0 1px,transparent 1px 7px)}
+.gl{position:absolute;top:0;bottom:0;width:1px;background:var(--grid)}
+.xl{position:absolute;top:0;bottom:0;border-left:1.5px dashed var(--ext);opacity:.55;transition:left .6s var(--ease),opacity .3s}
+.sl{position:absolute;top:0;bottom:0;width:2px;margin-left:-1px;background:var(--accent);opacity:.3;transition:left .6s var(--ease)}
+.lane{border-top:1px solid var(--line)}
+.lane .rl{font-size:13px;color:var(--ink);font-weight:500}
+.lane .rl i{width:10px;height:10px;border-radius:50%;background:var(--lc);flex:none}
+.lane .track{z-index:1;transition:height .3s var(--ease);height:36px}
+.ev{position:absolute;width:0;height:0;border:0;padding:0;background:none;cursor:pointer;z-index:1;transition:left .6s var(--ease),top .3s var(--ease),opacity .3s}
+.ev .dot{position:absolute;left:-6px;top:-6px;width:12px;height:12px;border-radius:50%;background:var(--lc);box-shadow:0 0 0 2px var(--surface)}
+.ev.x .dot{border-radius:2px;transform:rotate(45deg) scale(.95);background:var(--ext)}
+.ev .lbl{position:absolute;top:-10px;left:9px;font:12px/20px var(--f-body);white-space:nowrap;padding:0 5px;border-radius:4px;background:var(--pill);color:var(--ink);transition:opacity .2s}
+.ev.left .lbl{left:auto;right:9px}
+.ev.nolbl .lbl{opacity:0;pointer-events:none}
+.ev.off{opacity:0;pointer-events:none}
+.ev:hover,.ev:focus-visible,.ev.on{z-index:4}
+.ev:hover .lbl,.ev:focus-visible .lbl,.ev.on .lbl{opacity:1;pointer-events:auto;box-shadow:var(--shadow)}
+.ev.on .lbl{font-weight:700}
+.ev.on .dot{box-shadow:0 0 0 2px var(--surface),0 0 0 4px var(--lc)}
+.ev.x.on .dot{box-shadow:0 0 0 2px var(--surface),0 0 0 4px var(--ext)}
+.ev:focus-visible{outline:none}
+.ev:focus-visible .dot{outline:2px solid var(--accent);outline-offset:4px}
+.axis-row{border-top:1px solid var(--line)}
+.axis-row .track{height:30px}
+.tick{position:absolute;top:0;font:11px/1 var(--f-mono);color:var(--muted);transform:translateX(-50%);padding-top:10px;white-space:nowrap;transition:left .6s var(--ease)}
+.tick::before{content:"";position:absolute;left:50%;top:0;width:1px;height:6px;background:var(--line)}
+.tick.r{transform:translateX(-100%)}
+.tick.r::before{left:auto;right:0}
+.tick.l{transform:none}
+.tick.l::before{left:0}
+.legend{display:flex;flex-wrap:wrap;gap:6px 20px;margin:10px 2px 0;font-size:12px;color:var(--muted)}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend .xs{width:0;height:12px;border-left:1.5px dashed var(--ext)}
+.legend .hs{width:16px;height:10px;border-radius:2px;background:repeating-linear-gradient(135deg,var(--muted) 0 1px,transparent 1px 4px);opacity:.6}
+.hint{display:none}
+@media (max-width:760px){.hint{display:inline-flex}}
+
+/* 详情 */
+.panes{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:20px;margin-top:28px;align-items:start}
+@media (max-width:780px){.panes{grid-template-columns:minmax(0,1fr)}}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:22px 24px;min-width:0}
+.kicker{font:500 11px/1 var(--f-mono);letter-spacing:.14em;color:var(--muted);margin:0 0 14px}
+.tags{display:flex;gap:8px;flex-wrap:wrap}
+.tag{display:inline-flex;align-items:center;gap:6px;font-size:12px;padding:2px 10px 2px 8px;border-radius:999px;border:1px solid var(--line);color:var(--muted);background:transparent;cursor:default;line-height:1.6}
+.tag i{width:9px;height:9px;border-radius:50%;background:var(--lc)}
+.tag.per{cursor:pointer}
+.tag.per i{border-radius:2px}
+.detail h2{font:900 clamp(1.45rem,3vw,2rem)/1.3 var(--f-display);margin:14px 0 2px;text-wrap:balance}
+.sci{font-style:italic;color:var(--muted);margin:0;font-size:14px}
+.when{display:flex;align-items:baseline;gap:12px;margin:14px 0 0;flex-wrap:wrap}
+.when b{font:600 1.15rem var(--f-display);color:var(--accent)}
+.when span{font:13px var(--f-mono);color:var(--muted)}
+.desc{margin:10px 0 0;max-width:40em}
+.place{font-size:13px;color:var(--muted);margin:10px 0 0}
+.place:empty{display:none}
+.nav{display:flex;align-items:center;justify-content:space-between;margin-top:20px;padding-top:14px;border-top:1px solid var(--line);gap:8px}
+.nav button{font-size:13px;border:1px solid var(--line);background:transparent;border-radius:999px;padding:5px 14px;cursor:pointer}
+.nav button:disabled{opacity:.35;cursor:default}
+.nav span{font:12px var(--f-mono);color:var(--muted)}
+.phead{display:flex;gap:14px;align-items:center}
+.swatch{width:48px;height:48px;border-radius:6px;display:grid;place-items:center;font:900 22px var(--f-display);flex:none;box-shadow:inset 0 0 0 1px rgba(0,0,0,.12)}
+.period h2{font:900 1.5rem/1.2 var(--f-display);margin:0}
+.period h2 small{font:400 12px var(--f-mono);color:var(--muted);margin-left:8px;letter-spacing:.02em}
+.range{font-size:13px;color:var(--muted);margin:4px 0 0}
+.pnote{font-size:12.5px;color:var(--muted);margin:10px 0 0}
+.pnote:empty{display:none}
+.pdl{display:grid;gap:12px;margin:16px 0 0}
+.pdl div{display:grid;grid-template-columns:3.2em minmax(0,1fr);gap:8px}
+.pdl dt{font-weight:700;font-size:13px;color:var(--muted);padding-top:1px}
+.pdl dt.veg-dt{color:var(--c-plant)}
+.pdl dd{margin:0}
+.pchips{margin-top:18px;padding-top:14px;border-top:1px solid var(--line)}
+.pchips p{margin:0 0 8px;font-size:12px;color:var(--muted)}
+.pchips div{display:flex;flex-wrap:wrap;gap:6px}
+.pchips button{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:transparent;border-radius:999px;padding:1px 10px 1px 8px;font-size:12.5px;cursor:pointer;line-height:1.8}
+.pchips button i{width:8px;height:8px;border-radius:50%;background:var(--lc)}
+.pchips button[aria-current="true"]{background:var(--hl);border-color:var(--accent)}
+
+/* 清单 */
+.browse{margin-top:44px}
+.browse h2{font:900 1.45rem var(--f-display);margin:0}
+.browse .sub{font-size:13px;color:var(--muted);margin:4px 0 0}
+.groups{columns:2 380px;column-gap:36px;margin-top:10px}
+.group{break-inside:avoid;padding-top:16px}
+.ghead{display:flex;align-items:center;gap:10px;font-weight:700;padding-bottom:6px;border-bottom:1px solid var(--line)}
+.ghead i{width:14px;height:14px;border-radius:3px;flex:none;box-shadow:inset 0 0 0 1px rgba(0,0,0,.12)}
+.ghead small{font:12px var(--f-mono);color:var(--muted);font-weight:400;margin-left:auto;text-align:right}
+.rows{list-style:none;margin:0;padding:0}
+.rowbtn{width:100%;display:grid;grid-template-columns:7.6em 10px minmax(0,1fr);gap:10px;align-items:baseline;text-align:left;background:none;border:0;border-bottom:1px dashed var(--line);padding:7px 6px;font-size:14px;cursor:pointer;line-height:1.5}
+.rowbtn:hover{background:var(--zone)}
+.rowbtn.on{background:var(--hl)}
+.rowbtn .t{font:12px var(--f-mono);color:var(--muted);font-variant-numeric:tabular-nums}
+.rowbtn i{width:9px;height:9px;border-radius:50%;background:var(--lc);align-self:center}
+.rowbtn.x i{border-radius:1px;transform:rotate(45deg);background:var(--ext)}
+.rowbtn .s{color:var(--muted);font-style:italic;font-size:12px;margin-left:6px}
+@media (max-width:480px){.rowbtn{grid-template-columns:6.4em 9px minmax(0,1fr);font-size:13.5px}}
+footer{margin-top:44px;padding-top:16px;border-top:1px solid var(--line);font-size:12px;color:var(--muted);max-width:60em}
+@media (prefers-reduced-motion: reduce){*{transition:none!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+
+<div class="page">
+  <header>
+    <p class="eyebrow">GEOLOGIC TIME × 生物类群</p>
+    <h1>生命演化长卷</h1>
+    <p class="lede">从约 45 亿年前地球形成，到智人走遍世界。沿着国际地质年代表的色带，看植被如何从海洋藻类走向森林与草原，鱼类、两栖类、爬行类、鸟类和哺乳类又如何一步步登场，五次大灭绝又怎样改写了赢家名单。</p>
+    <ul class="stats" id="stats"></ul>
+  </header>
+
+  <div class="controls">
+    <div class="seg" id="seg" role="group" aria-label="时间范围"></div>
+    <div class="chips" id="chips" role="group" aria-label="显示的类群"></div>
+  </div>
+  <p class="viewlabel" id="viewlabel"></p>
+
+  <div class="tl-wrap" id="tlwrap">
+    <div class="tl" id="tl">
+      <div class="row era-row"><div class="rl">代</div><div class="track" id="eraTrack"></div></div>
+      <div class="row per-row"><div class="rl">宙 / 纪</div><div class="track" id="perTrack"></div></div>
+      <div class="row veg-row"><div class="rl">主导植被</div><div class="track" id="vegTrack"></div></div>
+      <div class="lanes" id="lanes"><div class="overlay" id="overlay"><div id="zones"></div><div id="grid"></div><div id="xlines"></div><div class="sl" id="selLine"></div></div></div>
+      <div class="row axis-row"><div class="rl">百万年前</div><div class="track" id="axis"></div></div>
+    </div>
+  </div>
+  <div class="legend">
+    <span><i class="xs"></i>五次大灭绝</span>
+    <span id="zoneNote"><i class="hs"></i><span id="zoneText"></span></span>
+    <span>点击色带放大到该时期，点击圆点查看详情，键盘 ← → 逐个浏览</span>
+    <span class="hint">左右滑动查看完整时间轴</span>
+  </div>
+
+  <div class="panes">
+    <article class="card detail" id="detail" aria-live="polite">
+      <p class="kicker">演化节点</p>
+      <div class="tags"><span class="tag" id="dLane"><i></i><span></span></span><button class="tag per" id="dPer" type="button"><i></i><span></span></button></div>
+      <h2 id="dName"></h2>
+      <p class="sci" id="dSci"></p>
+      <div class="when"><b id="dAgo"></b><span id="dMa"></span></div>
+      <p class="desc" id="dDesc"></p>
+      <p class="place" id="dPlace"></p>
+      <div class="nav"><button type="button" id="prev">← 更早</button><span id="pos"></span><button type="button" id="next">更晚 →</button></div>
+    </article>
+    <article class="card period" id="period">
+      <p class="kicker">时期概览</p>
+      <div class="phead"><div class="swatch" id="pSw"></div><div><h2 id="pName"></h2><p class="range" id="pRange"></p></div></div>
+      <p class="pnote" id="pNote"></p>
+      <dl class="pdl">
+        <div><dt class="veg-dt">植被</dt><dd id="pFlora"></dd></div>
+        <div><dt>动物</dt><dd id="pFauna"></dd></div>
+        <div><dt>气候</dt><dd id="pClimate"></dd></div>
+      </dl>
+      <div class="pchips"><p>本时期节点</p><div id="pChips"></div></div>
+    </article>
+  </div>
+
+  <section class="browse">
+    <h2>按年代浏览</h2>
+    <p class="sub" id="listSub"></p>
+    <div class="groups" id="groups"></div>
+  </section>
+
+  <footer>年代划分与色带配色依据国际地层委员会《国际年代地层表》；化石与事件年代均为近似值，不同研究可能相差数百万年。为便于阅读，“全部”视图中前寒武纪按比例压缩、新生代按比例放大，其余时期为线性比例。</footer>
+</div>
+
+<script>
+(function(){
+const $=id=>document.getElementById(id);
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+const LANES=[
+  {id:'plant',n:'植被'},{id:'sea',n:'海洋·鱼类'},{id:'amph',n:'两栖类'},
+  {id:'rept',n:'爬行类'},{id:'bird',n:'鸟类'},{id:'mamm',n:'哺乳类'},{id:'earth',n:'地球事件'}];
+const laneName=Object.fromEntries(LANES.map(l=>[l.id,l.n]));
+
+const ERAS=[
+  {id:'pre',n:'前寒武纪',s:4567,e:538.8,c:'#F4A7B5'},
+  {id:'pz',n:'古生代',s:538.8,e:251.9,c:'#99C08D'},
+  {id:'mz',n:'中生代',s:251.9,e:66,c:'#67C5CA'},
+  {id:'cz',n:'新生代',s:66,e:0,c:'#F2F91D'}];
+
+const PERIODS=[
+  {id:'hd',n:'冥古宙',en:'Hadean',sh:'冥',s:4567,e:4031,c:'#AE027E',
+   cl:'地球刚刚形成，岩浆海逐渐冷却，陨石撞击频繁。约 44 亿年前可能已出现液态海洋。',
+   fl:'没有任何植物，也没有可靠的生命证据。',
+   fa:'尚未发现生命。'},
+  {id:'ar',n:'太古宙',en:'Archean',sh:'太',s:4031,e:2500,c:'#F0047F',
+   cl:'大气几乎不含氧气，以氮气、二氧化碳和甲烷为主；太阳亮度比今天低约 20%–30%。',
+   fl:'没有植物。浅海中的蓝细菌形成叠层石，开始进行产氧光合作用。',
+   fa:'只有单细胞的细菌和古菌。'},
+  {id:'pt',n:'元古宙',en:'Proterozoic',sh:'元',s:2500,e:635,c:'#F73563',
+   note:'这里只显示到成冰纪结束；元古宙最后一个纪“埃迪卡拉纪”单独列出。',
+   cl:'大氧化事件后大气开始含氧；后期出现“雪球地球”式的全球冰期。',
+   fl:'海洋中出现真核藻类，约 10 亿年前已有多细胞红藻和绿藻。陆地仍是裸露岩石，最多覆盖一层微生物膜。',
+   fa:'单细胞真核生物出现并多样化，动物可能在这一时期末尾起源。'},
+  {id:'ed',n:'埃迪卡拉纪',en:'Ediacaran',sh:'埃',s:635,e:538.8,c:'#FED96A',
+   cl:'雪球冰期结束后气候回暖，海洋含氧量进一步上升。',
+   fl:'海中藻类繁盛，陆地依旧荒芜。',
+   fa:'埃迪卡拉生物群：最早的大型软体多细胞生物，形态多为叶状、盘状。'},
+  {id:'cm',n:'寒武纪',en:'Cambrian',sh:'寒',s:538.8,e:485.4,c:'#7FA056',
+   cl:'温暖的温室气候，没有大型冰盖，海平面高，大陆多位于南半球。',
+   fl:'陆地上还没有植物，只有微生物结皮；海里的藻类是主要的初级生产者。',
+   fa:'寒武纪大爆发：三叶虫、奇虾等节肢动物，腕足动物，以及最早的脊椎动物。'},
+  {id:'or',n:'奥陶纪',en:'Ordovician',sh:'奥',s:485.4,e:443.8,c:'#009270',
+   cl:'前期温暖；末期冈瓦纳大陆出现大冰川，全球变冷，海平面下降。',
+   fl:'类似苔藓的最早陆地植物登陆，贴着地面生长在水边。',
+   fa:'海洋生物大辐射：鹦鹉螺类、珊瑚、腕足动物和笔石繁盛，无颌鱼类出现。'},
+  {id:'si',n:'志留纪',en:'Silurian',sh:'志',s:443.8,e:419.2,c:'#B3E1B6',
+   cl:'冰期后回暖，海平面上升，气候相对稳定。',
+   fl:'最早的维管植物库克逊蕨出现，陆地上开始出现低矮的绿色斑块。',
+   fa:'有颌鱼类出现；广翅鲎（海蝎）是大型掠食者；蜈蚣类等节肢动物开始登陆。'},
+  {id:'dv',n:'泥盆纪',en:'Devonian',sh:'泥',s:419.2,e:358.9,c:'#CB8C37',
+   cl:'总体温暖；晚期多次出现海洋缺氧事件。',
+   fl:'植物迅速扩张，先后演化出根、叶、木材和种子，形成地球上最早的森林。',
+   fa:'“鱼类时代”。肉鳍鱼演化出四足动物，晚期出现最早有四肢的脊椎动物；昆虫登陆。'},
+  {id:'cb',n:'石炭纪',en:'Carboniferous',sh:'石',s:358.9,e:298.9,c:'#67A599',
+   cl:'中前期温暖潮湿，大气含氧量极高（约 30%）；后期南方冰川扩张，气候变干。',
+   fl:'鳞木、封印木、芦木和树蕨组成大片沼泽森林，形成今天的主要煤层；晚期热带雨林崩溃。',
+   fa:'两栖类繁盛；翼展约 70 厘米的巨脉蜻蜓和巨型马陆出现；最早的爬行类和下孔类登场。'},
+  {id:'pm',n:'二叠纪',en:'Permian',sh:'二',s:298.9,e:251.9,c:'#F04028',
+   cl:'盘古大陆形成，内陆干旱炎热，季节变化明显。',
+   fl:'针叶树、苏铁、种子蕨等裸子植物兴起；南方冈瓦纳大陆广布舌羊齿。',
+   fa:'异齿龙、兽孔类等下孔类主宰陆地。末期发生地球史上最严重的大灭绝。'},
+  {id:'tr',n:'三叠纪',en:'Triassic',sh:'三',s:251.9,e:201.4,c:'#812B92',
+   cl:'炎热干燥，两极没有冰盖，盘古大陆内部有大片沙漠。',
+   fl:'大灭绝后植被缓慢恢复，以针叶树、苏铁、本内苏铁、银杏和蕨类为主。',
+   fa:'恐龙、翼龙、鳄类祖先和最早的哺乳形动物出现；海里有鱼龙和幻龙。'},
+  {id:'ju',n:'侏罗纪',en:'Jurassic',sh:'侏',s:201.4,e:145,c:'#34B2C9',
+   cl:'温暖湿润；盘古大陆裂解，海平面上升，内陆沙漠缩小。',
+   fl:'裸子植物鼎盛：针叶林、苏铁、银杏和蕨类构成茂密森林，这时还没有花，也没有草。',
+   fa:'巨型蜥脚类恐龙、剑龙、异特龙；带羽毛的恐龙和始祖鸟；小型哺乳动物多在夜间活动。'},
+  {id:'kr',n:'白垩纪',en:'Cretaceous',sh:'白',s:145,e:66,c:'#7FC64E',
+   cl:'典型的温室气候，海平面很高，连极地也有森林。',
+   fl:'开花植物（被子植物）出现并迅速扩张，到末期已成为大多数陆地植被的主体。',
+   fa:'霸王龙、三角龙、鸭嘴龙；鸟类多样化；海中有沧龙、蛇颈龙和菊石。末期发生大灭绝。'},
+  {id:'pg',n:'古近纪',en:'Paleogene',sh:'古',s:66,e:23.03,c:'#FD9A52',
+   cl:'初期温暖，始新世早期出现极热事件；约 3400 万年前南极冰盖形成，气候转向冷干。',
+   fl:'热带雨林一度扩展到高纬度地区；后期变冷，温带落叶林和开阔林地扩展。',
+   fa:'哺乳动物大辐射：早期灵长类、马和鲸的祖先出现；有巨型不会飞的鸟；渐新世有巨犀。'},
+  {id:'ng',n:'新近纪',en:'Neogene',sh:'新',s:23.03,e:2.58,c:'#FFE619',
+   cl:'持续变冷变干；青藏高原隆升，影响亚洲季风。',
+   fl:'草原和稀树草原大扩张，C4 禾草兴起，森林退缩。',
+   fa:'马、羚羊等食草动物适应草原生活；类人猿多样化；约 700 万年前人类支系出现。'},
+  {id:'q',n:'第四纪',en:'Quaternary',sh:'第',s:2.58,e:0,c:'#F9F97F',
+   cl:'冰期与间冰期周期性交替；约 1.17 万年前进入温暖的全新世。',
+   fl:'植被带随冰期南北迁移；冰期时北方有大片“猛犸草原”；全新世农业大规模改变地表植被。',
+   fa:'猛犸象、披毛犀、剑齿虎等冰期巨型动物，多数在末次冰期前后灭绝；智人出现并扩散到全球。'}];
+
+const VEG=[
+  {s:3500,e:470,n:'海洋藻类与微生物（陆地荒芜）',sh:'海洋藻类',v:1},
+  {s:470,e:420,n:'苔藓类植物',sh:'苔藓类',v:2},
+  {s:420,e:385,n:'早期维管植物',sh:'早期维管',v:3},
+  {s:385,e:300,n:'蕨类与石松森林',sh:'蕨类森林',v:4},
+  {s:300,e:120,n:'裸子植物',sh:'裸子植物',v:5},
+  {s:120,e:8,n:'被子植物',sh:'被子植物',v:6},
+  {s:8,e:0,n:'被子植物与草原',sh:'草原',v:7}];
+
+const EVENTS=[
+  // 地球事件
+  {t:4540,l:'earth',n:'地球形成',s:'Formation of Earth',d:'太阳系诞生后不久，原始地球由尘埃和星子吸积而成。早期地表处于熔融状态，频繁遭受撞击，一次大碰撞形成了月球。'},
+  {t:2400,l:'earth',n:'大氧化事件',s:'Great Oxidation Event',d:'蓝细菌长期光合作用释放的氧气开始在大气中积累，氧含量第一次显著上升。这改变了海洋化学，也为后来依赖氧气的复杂生命铺平了道路。'},
+  {t:680,l:'earth',n:'雪球地球',s:'Snowball Earth',d:'成冰纪（约 7.2 亿至 6.35 亿年前）至少发生了两次全球性冰期，冰盖可能一直延伸到赤道附近。冰期结束后不久，大型多细胞生物开始出现。'},
+  {t:445,l:'earth',x:1,n:'奥陶纪末大灭绝',s:'End-Ordovician extinction',d:'全球变冷、冈瓦纳大陆冰川扩张导致海平面剧烈下降，约 85% 的海洋物种消失。这是五次大灭绝中的第一次。'},
+  {t:372,l:'earth',x:1,n:'泥盆纪晚期大灭绝',s:'Late Devonian extinction',d:'一连串持续数百万年的灭绝脉冲，海洋缺氧是主要原因之一，可能与陆地植物扩张改变了岩石风化和营养物质输入有关。珊瑚礁生态系统遭到重创。'},
+  {t:320,l:'earth',n:'盘古大陆聚合',s:'Pangaea',d:'各大陆在石炭纪到二叠纪逐渐拼合成超大陆“盘古大陆”。大陆内部远离海洋，气候变得干燥，季节性增强，深刻影响了植被分布。'},
+  {t:252,l:'earth',x:1,n:'二叠纪末大灭绝',s:'End-Permian extinction',d:'地球史上最严重的大灭绝，约 81% 的海洋物种和约 70% 的陆地脊椎动物物种消失。西伯利亚大规模火山喷发引发全球变暖、海洋酸化和缺氧。'},
+  {t:201.4,l:'earth',x:1,n:'三叠纪末大灭绝',s:'End-Triassic extinction',d:'与盘古大陆裂解时的大规模火山活动有关，约四分之三的物种消失。许多与恐龙竞争的类群退场，恐龙随后称霸陆地。'},
+  {t:180,l:'earth',n:'盘古大陆解体',s:'Breakup of Pangaea',d:'侏罗纪期间大西洋开始张开，盘古大陆逐渐分裂为北方的劳亚古陆和南方的冈瓦纳古陆，各大陆上的生物开始各自演化。'},
+  {t:66,l:'earth',x:1,n:'白垩纪末大灭绝',s:'K–Pg extinction',d:'一颗直径约 10 公里的小行星撞击今墨西哥尤卡坦半岛（希克苏鲁伯陨石坑），加上印度德干暗色岩火山活动，约 75% 的物种灭绝，包括所有非鸟恐龙、翼龙和菊石。'},
+  {t:56,l:'earth',n:'古新世—始新世极热事件',s:'PETM',d:'大量碳在短时间内进入大气，全球平均气温上升约 5–8 °C。热带森林扩展到高纬度地区，许多现代哺乳动物类群随后迅速扩散。'},
+  {t:34,l:'earth',n:'南极冰盖形成',s:'Eocene–Oligocene transition',d:'大气二氧化碳浓度下降，南极洲与南美洲分离后形成环南极洋流，南极开始出现永久冰盖。地球气候从“温室”转向“冰室”。'},
+  {t:2.58,l:'earth',p:'q',n:'第四纪冰期循环',s:'Quaternary glaciations',d:'北半球大冰盖开始周期性扩张和消退，冰期与间冰期交替出现。剧烈的气候波动推动植被带南北迁移，也影响了人类的扩散路线。'},
+  {t:0.0117,l:'earth',n:'末次冰期结束',s:'Holocene begins',d:'约 1.17 万年前全新世开始，气候转暖并趋于稳定。猛犸象、披毛犀等许多冰期巨型动物在这一时期前后相继灭绝。'},
+  // 植被
+  {t:3480,l:'plant',n:'叠层石与蓝细菌',s:'Stromatolites',w:'澳大利亚西部皮尔巴拉',d:'由蓝细菌等微生物一层层黏结沉积物形成的岩石构造，是最古老的生命证据之一。蓝细菌的产氧光合作用是植物光合作用的源头，植物细胞里的叶绿体就起源于被吞入的蓝细菌。'},
+  {t:1047,l:'plant',n:'红藻：最早的多细胞藻类',s:'Bangiomorpha',w:'加拿大北极群岛',d:'约 10 亿年前的红藻化石已有细胞分工和有性生殖的迹象，是已知最早能归入现代类群的多细胞真核生物之一。'},
+  {t:470,l:'plant',n:'植物登陆',s:'Cryptospores',d:'奥陶纪中期出现了“隐孢子”化石，来自类似苔藓的最早陆地植物。它们没有真正的根和维管组织，只能贴地生长在潮湿处，却开始把岩石改造成土壤。'},
+  {t:433,l:'plant',n:'库克逊蕨：最早的维管植物',s:'Cooksonia',w:'英国威尔士、爱尔兰等地',d:'只有几厘米高的分叉小茎，顶端长着孢子囊，没有叶也没有根。维管组织能输送水分并支撑植物体，是植物向高处生长的关键一步。'},
+  {t:385,l:'plant',n:'最早的森林',s:'Archaeopteris · Wattieza',w:'美国纽约州吉尔博阿',d:'泥盆纪中晚期出现了高 8 米到 30 米的树木，古羊齿已具有真正的木材和扁平叶片。森林加速了岩石风化，吸收了大量二氧化碳，改变了全球气候。'},
+  {t:365,l:'plant',n:'种子植物出现',s:'Elkinsia',w:'美国西弗吉尼亚州',d:'种子把胚胎和养料包在保护层里，受精不再依赖水，植物因此可以扩展到干燥地区。这是裸子植物和后来被子植物的共同起点。'},
+  {t:320,l:'plant',n:'石炭纪煤炭森林',s:'Lepidodendron · Sigillaria · Calamites',d:'鳞木、封印木高达 30–40 米，与芦木、树蕨一起组成广阔的沼泽森林。大量植物遗体被埋藏，形成了今天主要的煤层，大气含氧量一度高达约 30%。'},
+  {t:305,l:'plant',n:'石炭纪雨林崩溃',s:'Carboniferous rainforest collapse',d:'气候变干变冷，连片的热带沼泽森林碎裂成孤岛。更耐旱的针叶类和种子蕨逐渐取代了石松类大树。'},
+  {t:275,l:'plant',n:'舌羊齿遍布冈瓦纳',s:'Glossopteris',d:'二叠纪南方大陆广泛分布的种子蕨。它舌状叶片的化石在南美、非洲、印度、南极和澳大利亚都有发现，是大陆漂移学说的重要证据。'},
+  {t:180,l:'plant',n:'裸子植物的时代',s:'Cycads · Ginkgo · Conifers',d:'侏罗纪陆地被苏铁、银杏、针叶树和蕨类覆盖，没有花也没有草。今天的银杏与当时的形态非常接近，因此被称为“活化石”。'},
+  {t:125,l:'plant',n:'古果：早期开花植物',s:'Archaefructus',w:'中国辽宁（热河生物群）',d:'发现于辽宁的古老被子植物，生长在水中，已有把种子包起来的心皮，但还没有明显的花瓣。它是研究“花从何而来”的关键化石。'},
+  {t:100,l:'plant',n:'被子植物大辐射',s:'Angiosperm radiation',d:'白垩纪中期开花植物迅速多样化，并与蜜蜂等传粉昆虫协同演化。到白垩纪末，被子植物已成为大多数陆地植被的主体。'},
+  {t:8,l:'plant',n:'C4 草原扩张',s:'C4 grasslands',d:'中新世晚期，采用 C4 光合途径的禾草在热带和亚热带迅速扩张，形成大片稀树草原。开阔的草原推动了马、羚羊等食草动物以及人类祖先的演化。'},
+  {t:0.011,l:'plant',n:'作物驯化',s:'Plant domestication',d:'冰期结束后不久，西亚驯化了小麦和大麦，中国长江流域驯化了水稻，黄河流域驯化了粟。农业从根本上改变了地表的植被面貌。'},
+  // 海洋·鱼类
+  {t:3700,l:'sea',n:'最早的生命迹象',s:'Earliest life',w:'格陵兰伊苏阿',d:'格陵兰约 37 亿年前的岩石中保存有可能由微生物形成的结构。最早的生命是单细胞原核生物，很可能诞生在海底热液附近。'},
+  {t:1650,l:'sea',n:'真核生物出现',s:'Eukaryotes',w:'中国华北燕山地区等',d:'细胞有了细胞核和线粒体等细胞器。线粒体来自被吞入的细菌，这种“内共生”是所有复杂生命的基础。'},
+  {t:575,l:'sea',n:'埃迪卡拉生物群',s:'Ediacaran biota',w:'澳大利亚南部、中国湖北（石板滩生物群）',d:'最早的大型复杂多细胞生物，多为扁平的叶状、盘状软体生物，没有明显的口和骨骼。它们大多在寒武纪之前消失。'},
+  {t:530,l:'sea',n:'寒武纪生命大爆发',s:'Cambrian explosion',d:'约 2000 万年间，绝大多数现生动物门类的祖先相继出现，眼睛、硬壳、附肢和捕食关系开始普遍。三叶虫成为这个时代的标志。'},
+  {t:518,l:'sea',n:'澄江生物群与昆明鱼',s:'Myllokunmingia',w:'中国云南澄江',d:'澄江保存了大量带软体结构的寒武纪化石。其中的昆明鱼和海口鱼是已知最早的脊椎动物之一，体长只有 3 厘米左右。'},
+  {t:460,l:'sea',n:'奥陶纪海洋生物大辐射',s:'Great Ordovician Biodiversification',d:'海洋生物多样性在奥陶纪大幅增加，腕足动物、苔藓虫、珊瑚和鹦鹉螺类繁盛，还出现了长达数米的直角石。'},
+  {t:423,l:'sea',n:'有颌鱼类崛起',s:'Entelognathus',w:'中国云南曲靖',d:'颌让脊椎动物能够主动捕食和咀嚼。曲靖发现的初始全颌鱼显示，现代鱼类和人类颌骨的基本结构可以追溯到盾皮鱼类。'},
+  {t:380,l:'sea',n:'泥盆纪：鱼类时代',s:'Age of Fishes',d:'盾皮鱼、肉鳍鱼、辐鳍鱼和早期鲨鱼同时繁盛。巨型盾皮鱼邓氏鱼体长可能超过 4 米，咬合力惊人。'},
+  // 两栖类
+  {t:375,l:'amph',n:'提塔利克鱼：从鳍到腿',s:'Tiktaalik',w:'加拿大埃尔斯米尔岛',d:'兼具鱼类和四足动物的特征：有鳃和鳞片，也有能活动的脖子和带腕骨的粗壮鳍，可以在浅水中撑起身体。'},
+  {t:365,l:'amph',n:'棘螈与鱼石螈',s:'Acanthostega · Ichthyostega',w:'格陵兰东部',d:'最早一批有四肢和趾的四足动物，棘螈每只前肢有 8 个趾。它们仍主要生活在水中，四肢最初可能用于在水草间划行。'},
+  {t:330,l:'amph',n:'两栖类的黄金时代',s:'Temnospondyls',d:'石炭纪温暖潮湿的沼泽中，两栖类成为陆地上最主要的脊椎动物，一些分椎类体长可达数米。'},
+  {t:290,l:'amph',n:'引螈',s:'Eryops',w:'美国得克萨斯州等',d:'二叠纪早期的大型两栖类，体长约 2 米，头骨宽大，生活方式类似今天的鳄鱼。'},
+  {t:250,l:'amph',n:'三叠尾蛙：蛙类的先驱',s:'Triadobatrachus',w:'马达加斯加',d:'三叠纪早期的蛙类近亲，脊椎已经缩短，有适合跳跃的特征，但仍保留一条短尾。'},
+  {t:165,l:'amph',n:'初螈：早期蝾螈',s:'Chunerpeton',w:'中国内蒙古道虎沟',d:'侏罗纪中期的蝾螈化石，保存了身体轮廓。它属于隐鳃鲵类（今天大鲵所在的类群），说明这一支在侏罗纪已经出现。'},
+  {t:65,l:'amph',n:'现代蛙类大辐射',s:'Frog radiation',d:'白垩纪末大灭绝后，今天约 88% 的蛙类所属的三大支系几乎同时开始分化，随新生代热带森林的扩张而繁盛。'},
+  // 爬行类
+  {t:312,l:'rept',n:'林蜥：最早的爬行动物',s:'Hylonomus',w:'加拿大新斯科舍',d:'体长约 20 厘米，化石发现于石松树桩的空洞中。羊膜卵让爬行动物可以在陆地上产卵，彻底摆脱了对水体的依赖。'},
+  {t:248,l:'rept',n:'鱼龙回归海洋',s:'Chaohusaurus',w:'中国安徽巢湖',d:'二叠纪末大灭绝后不久，一些爬行动物重新适应海洋，演化出类似海豚的流线型身体。巢湖龙化石保存了正在分娩的状态，证明鱼龙直接产下幼崽。'},
+  {t:231,l:'rept',n:'始盗龙：最早的恐龙之一',s:'Eoraptor',w:'阿根廷伊斯基瓜拉斯托',d:'三叠纪晚期的小型两足恐龙，体长约 1 米。早期恐龙并不占优势，与众多其他爬行类共存。'},
+  {t:225,l:'rept',n:'翼龙飞上天空',s:'Pterosaurs',d:'第一批依靠动力飞行的脊椎动物，翼膜由极长的第四指支撑。后来的风神翼龙翼展可达 10 米以上。'},
+  {t:220,l:'rept',n:'半甲齿龟',s:'Odontochelys',w:'中国贵州',d:'早期龟类，只有腹甲而背甲尚未形成，嘴里还有牙齿，揭示了龟壳“先有腹甲、后有背甲”的演化顺序。'},
+  {t:167,l:'rept',n:'最早的蛇',s:'Eophis',w:'英国',d:'侏罗纪中期的颌骨化石是已知最古老的蛇。白垩纪的一些蛇仍然保留着后肢。'},
+  {t:155,l:'rept',n:'马门溪龙',s:'Mamenchisaurus',w:'中国四川、新疆',d:'侏罗纪晚期的蜥脚类恐龙，脖子几乎占体长的一半，是颈部最长的恐龙之一。蜥脚类是有史以来最大的陆地动物。'},
+  {t:90,l:'rept',n:'沧龙称霸海洋',s:'Mosasaurs',d:'白垩纪晚期的海生爬行动物，与蛇和巨蜥关系较近，最大体长超过 12 米，是当时海洋中的顶级掠食者。'},
+  {t:68,l:'rept',n:'霸王龙',s:'Tyrannosaurus rex',w:'北美洲西部',d:'白垩纪最末期的大型肉食恐龙，体长约 12 米，咬合力位列已知陆地动物前茅。它与三角龙一同见证了恐龙时代的终结。'},
+  {t:60,l:'rept',n:'泰坦巨蟒',s:'Titanoboa',w:'哥伦比亚',d:'恐龙灭绝后炎热的古新世热带雨林中生活的巨蛇，体长约 13 米。它的体型说明当时热带比今天更热。'},
+  // 鸟类
+  {t:160,l:'bird',n:'近鸟龙',s:'Anchiornis',w:'中国辽宁',d:'小型带羽毛恐龙，前后肢都长着长羽毛。研究者根据化石中保存的黑素体复原了它的羽色：黑白相间的翅膀和红褐色的头冠。'},
+  {t:150,l:'bird',n:'始祖鸟',s:'Archaeopteryx',w:'德国巴伐利亚索伦霍芬',d:'既有羽毛和翅膀，也有牙齿、爪子和长长的骨质尾巴，是恐龙与鸟类之间联系的经典证据。'},
+  {t:125,l:'bird',n:'孔子鸟：最早有角质喙的鸟',s:'Confuciusornis',w:'中国辽宁（热河生物群）',d:'热河生物群中数量极多的鸟类，已经没有牙齿，长出了角质喙，部分个体有一对很长的尾羽。'},
+  {t:64,l:'bird',n:'今鸟类的幸存与辐射',s:'Neornithes',d:'在所有恐龙中，只有鸟类的一支熬过了白垩纪末大灭绝，幸存者可能多是在地面生活的类型。此后数百万年内，现代鸟类的主要支系迅速分化。'},
+  {t:61,l:'bird',n:'威马奴企鹅',s:'Waimanu',w:'新西兰',d:'最古老的企鹅之一，已经不会飞，但翅膀还没有像现代企鹅那样特化成鳍状。说明鸟类在大灭绝后很快就进入了海洋生态位。'},
+  {t:55,l:'bird',n:'冠恐鸟',s:'Gastornis',w:'欧洲、北美洲',d:'始新世不会飞的大鸟，高约 2 米，喙巨大。过去被认为是凶猛的掠食者，近年的研究认为它更可能以植物为食。'},
+  // 哺乳类
+  {t:306,l:'mamm',n:'下孔类分出',s:'Archaeothyris',w:'加拿大新斯科舍',d:'早期羊膜动物分成两大支：通向爬行类和鸟类的蜥形类，以及通向哺乳动物的下孔类。始祖单弓兽是已知最早的下孔类之一。'},
+  {t:285,l:'mamm',n:'异齿龙：不是恐龙',s:'Dimetrodon',d:'背上长着高大“帆”的二叠纪掠食者。它常被误认为恐龙，其实它和哺乳动物的亲缘关系比和恐龙更近，而且比最早的恐龙早了 4000 多万年。'},
+  {t:260,l:'mamm',n:'兽孔类繁盛',s:'Therapsids',d:'二叠纪中晚期，兽孔类成为陆地上的优势动物，比如长着剑齿的丽齿兽。它们的四肢更靠近身体下方，牙齿开始分化为门齿、犬齿和颊齿。'},
+  {t:250,l:'mamm',n:'水龙兽：大灭绝的幸存者',s:'Lystrosaurus',w:'南非、南极洲、中国新疆等',d:'二叠纪末大灭绝后，这种猪大小的植食动物几乎遍布盘古大陆，在一些地层里占陆地脊椎动物化石的九成以上。'},
+  {t:205,l:'mamm',n:'摩根齿兽：早期哺乳形动物',s:'Morganucodon',w:'英国威尔士、中国云南禄丰',d:'体长约 10 厘米，外形像鼩鼱，可能在夜间捕食昆虫。它的下颌与耳骨结构正处在从爬行类向哺乳类过渡的阶段。'},
+  {t:160,l:'mamm',n:'中华侏罗兽',s:'Juramaia',w:'中国辽宁',d:'小型哺乳动物，被认为是最早的真兽类（胎盘类哺乳动物所在的类群）之一，把胎盘类与有袋类分化的时间推到了侏罗纪。'},
+  {t:125,l:'mamm',n:'爬兽：吃恐龙的哺乳动物',s:'Repenomamus',w:'中国辽宁（热河生物群）',d:'白垩纪体型较大的哺乳动物，巨爬兽体长约 1 米。一件强壮爬兽标本的胃部保存着幼年鹦鹉嘴龙的骨骼。'},
+  {t:62,l:'mamm',n:'哺乳动物大辐射',s:'Placental radiation',d:'恐龙灭绝后空出的生态位被哺乳动物迅速填补，体型在几百万年内大幅增大，现代各主要类群开始出现。'},
+  {t:55,l:'mamm',n:'阿喀琉斯基猴：早期灵长类',s:'Archicebus',w:'中国湖北荆州',d:'保存较完整的早期灵长类骨架，体重不到 30 克，位于类人猿与眼镜猴分化的节点附近。'},
+  {t:50,l:'mamm',n:'巴基斯坦古鲸：鲸的陆地祖先',s:'Pakicetus',w:'巴基斯坦',d:'外形像狼的四足动物，但耳骨结构与鲸相同。此后约 1000 万年内，鲸类彻底转向海洋生活，后肢逐渐退化。'},
+  {t:30,l:'mamm',n:'巨犀',s:'Paraceratherium',w:'中国、蒙古、巴基斯坦等',d:'渐新世亚洲的无角犀类，肩高约 5 米，体重约 15–20 吨，是已知最大的陆地哺乳动物之一。'},
+  {t:7,l:'mamm',n:'乍得沙赫人：人与黑猩猩分道',s:'Sahelanthropus',w:'乍得',d:'约 700 万年前，人类支系与黑猩猩支系分开。乍得沙赫人是这次分化附近的候选化石之一。'},
+  {t:3.2,l:'mamm',n:'露西：阿法南方古猿',s:'Australopithecus afarensis',w:'埃塞俄比亚',d:'著名骨架“露西”显示她已能直立行走，但脑容量与黑猩猩相近。'},
+  {t:1.9,l:'mamm',n:'直立人走出非洲',s:'Homo erectus',w:'非洲、亚洲',d:'身体比例接近现代人，能制作手斧，可能已会用火。直立人是最早走出非洲的人类，足迹远达中国（元谋人、北京人）和印度尼西亚。'},
+  {t:0.3,l:'mamm',n:'智人出现',s:'Homo sapiens',w:'摩洛哥杰贝尔依罗',d:'已知最早的智人化石约 30 万年前。约 6–7 万年前起，智人大规模走出非洲，最终扩散到全球。'}
+];
+
+// ---------- 辅助 ----------
+const byPer=Object.fromEntries(PERIODS.map(p=>[p.id,p]));
+function periodOf(e){
+  if(e.p) return byPer[e.p];
+  return PERIODS.find(p=>p.s>e.t&&e.t>=p.e)||PERIODS[0];
+}
+EVENTS.sort((a,b)=>b.t-a.t);
+EVENTS.forEach((e,i)=>{e.id='e'+i;e.per=periodOf(e);});
+const byId=Object.fromEntries(EVENTS.map(e=>[e.id,e]));
+
+const num=(v,d)=>String(+v.toFixed(d));
+function fmtAbs(t){
+  if(t<=0) return '今天';
+  if(t>=100){const y=t/100;return num(y,y>=10?1:2)+' 亿';}
+  const w=t*100;return num(w,w>=10?0:2)+' 万';
+}
+const fmtAgo=t=>'约 '+fmtAbs(t)+'年前';
+const fmtMa=t=>t>=1?num(t,2)+' Ma':num(t*1000,1)+' ka';
+const fmtRange=(s,e)=>fmtAbs(s)+'年前 — '+(e<=0?'今天':fmtAbs(e)+'年前');
+function textOn(hex){
+  const n=parseInt(hex.slice(1),16),r=(n>>16&255)/255,g=(n>>8&255)/255,b=(n&255)/255;
+  const f=c=>c<=.03928?c/12.92:Math.pow((c+.055)/1.055,2.4);
+  return (0.2126*f(r)+0.7152*f(g)+0.0722*f(b))>0.3?'#1A1D1B':'#FFFFFF';
+}
+const cvs=document.createElement('canvas').getContext('2d');
+function tw(text,px,weight){cvs.font=(weight||400)+' '+px+'px "Noto Sans SC","PingFang SC","Microsoft YaHei",sans-serif';return cvs.measureText(text).width;}
+
+// ---------- 比例尺 ----------
+const ALL=[{a:4567,b:538.8,x0:0,x1:.12},{a:538.8,b:66,x0:.12,x1:.74},{a:66,b:0,x0:.74,x1:1}];
+const rangeOf=z=>ERAS.find(e=>e.id===z)||byPer[z];
+const isPeriod=z=>!!byPer[z];
+function segsFor(z){
+  if(z==='all') return ALL;
+  const r=rangeOf(z),pad=(r.s-r.e)*.04;
+  return [{a:r.s+pad,b:r.e-pad,x0:0,x1:1}];
+}
+function X(t,S){
+  for(const g of S) if(t<=g.a&&t>=g.b) return g.x0+(g.a-t)/(g.a-g.b)*(g.x1-g.x0);
+  const g=t>S[0].a?S[0]:S[S.length-1];
+  return g.x0+(g.a-t)/(g.a-g.b)*(g.x1-g.x0);
+}
+const inView=f=>f>=-0.001&&f<=1.001;
+const NICE=[0.001,0.002,0.005,0.01,0.02,0.05,0.1,0.2,0.5,1,2,5,10,20,50,100,200,500,1000,2000];
+function niceStep(raw){let b=NICE[0];for(const n of NICE) if(Math.abs(Math.log(n/raw))<Math.abs(Math.log(b/raw))) b=n;return b;}
+function ticks(S,W){
+  const out=[];
+  for(const g of S){
+    const px=(g.x1-g.x0)*W,n=Math.max(2,Math.round(px/85)),step=niceStep((g.a-g.b)/n);
+    for(let k=Math.floor(g.a/step+1e-9);k*step>=g.b-1e-9;k--){
+      const v=+(k*step).toFixed(6); if(v<0) break;
+      const f=X(v,S); if(!inView(f)) continue;
+      const x=f*W; if(out.some(o=>Math.abs(o.x-x)<48)) continue;
+      out.push({v,f,x});
+    }
+  }
+  return out;
+}
+
+// ---------- 状态 ----------
+const state={zoom:'all',lanes:new Set(LANES.map(l=>l.id)),sel:EVENTS.find(e=>e.s==='Archaefructus').id,per:'kr'};
+const ordered=()=>EVENTS.filter(e=>state.lanes.has(e.l));
+
+// ---------- 构建 ----------
+const els={};
+function build(){
+  $('stats').innerHTML=
+    '<li><b>45.4 亿</b>年地球史</li><li><b>'+LANES.length+'</b>条类群线</li><li><b>'+EVENTS.length+'</b>个演化节点</li><li><b>'+EVENTS.filter(e=>e.x).length+'</b>次大灭绝</li>';
+
+  const seg=$('seg');
+  [['all','全部'],['pre','前寒武纪'],['pz','古生代'],['mz','中生代'],['cz','新生代']].forEach(([z,n])=>{
+    const b=document.createElement('button');b.type='button';b.textContent=n;b.dataset.z=z;
+    b.onclick=()=>zoomTo(z);seg.append(b);
+  });
+
+  const chips=$('chips');
+  LANES.forEach(l=>{
+    const b=document.createElement('button');b.type='button';b.className='chip';b.dataset.l=l.id;
+    b.style.setProperty('--lc','var(--c-'+l.id+')');
+    b.innerHTML='<i></i>'+l.n;b.onclick=()=>toggleLane(l.id);chips.append(b);
+  });
+
+  ERAS.forEach(e=>{
+    const b=document.createElement('button');b.type='button';b.className='band';
+    b.style.background=e.c;b.style.color=textOn(e.c);b.title=e.n+'：'+fmtRange(e.s,e.e);
+    b.innerHTML='<span></span>';b.onclick=()=>zoomTo(e.id);$('eraTrack').append(b);e.el=b;
+  });
+  PERIODS.forEach(p=>{
+    const b=document.createElement('button');b.type='button';b.className='band';
+    b.style.background=p.c;b.style.color=textOn(p.c);b.title=p.n+'：'+fmtRange(p.s,p.e);
+    b.setAttribute('aria-label',p.n+'，放大到该时期');
+    b.innerHTML='<span></span>';b.onclick=()=>pickPeriod(p.id);$('perTrack').append(b);p.el=b;
+  });
+  VEG.forEach(v=>{
+    const d=document.createElement('div');d.className='veg';d.style.background='var(--veg'+v.v+')';
+    d.title=v.n+'：'+fmtRange(v.s,v.e);d.innerHTML='<span></span>';$('vegTrack').append(d);v.el=d;
+  });
+
+  const lanes=$('lanes');
+  LANES.forEach(l=>{
+    const row=document.createElement('div');row.className='lane';row.style.setProperty('--lc','var(--c-'+l.id+')');
+    row.innerHTML='<div class="rl"><i></i>'+l.n+'</div><div class="track"></div>';
+    const track=row.lastChild;
+    EVENTS.filter(e=>e.l===l.id).forEach(e=>{
+      const b=document.createElement('button');b.type='button';b.className='ev'+(e.x?' x':'');
+      b.setAttribute('aria-label',e.n+'，'+fmtAgo(e.t));
+      b.innerHTML='<span class="dot"></span><span class="lbl">'+e.n+'</span>';
+      b.onclick=()=>select(e.id);track.append(b);e.el=b;e.lw=tw(e.n,12)+12;
+    });
+    lanes.append(row);l.row=row;l.track=track;
+  });
+
+  const xl=$('xlines');
+  EVENTS.filter(e=>e.x).forEach(e=>{const d=document.createElement('div');d.className='xl';xl.append(d);e.xl=d;});
+
+  $('prev').onclick=()=>step(-1);
+  $('next').onclick=()=>step(1);
+  $('dPer').onclick=()=>pickPeriod(byId[state.sel].per.id);
+  $('pChips').onclick=ev=>{const b=ev.target.closest('button');if(b) select(b.dataset.id);};
+  $('groups').onclick=ev=>{const b=ev.target.closest('button');if(b){select(b.dataset.id,{reveal:true});$('detail').scrollIntoView({behavior:reduce?'auto':'smooth',block:'nearest'});}};
+  document.addEventListener('keydown',ev=>{
+    if(ev.altKey||ev.ctrlKey||ev.metaKey) return;
+    const tag=(ev.target.tagName||'').toLowerCase(); if(tag==='input'||tag==='textarea') return;
+    if(ev.key==='ArrowLeft'){ev.preventDefault();step(-1,true);}
+    else if(ev.key==='ArrowRight'){ev.preventDefault();step(1,true);}
+  });
+}
+
+// ---------- 布局 ----------
+function placeBand(o,S,W,full,short){
+  const cl=v=>Math.max(-0.5,Math.min(1.5,v));
+  const x0=cl(X(o.s,S)),x1=cl(X(o.e,S));
+  o.el.style.left=(x0*100)+'%';o.el.style.width=((x1-x0)*100)+'%';
+  const px=Math.max(0,Math.min(x1,1)-Math.max(x0,0))*W;
+  o.el.firstChild.textContent=px>tw(full,12)+14?full:(px>tw(short,12)+8?short:'');
+}
+function layout(){
+  const S=segsFor(state.zoom),W=$('axis').clientWidth;
+  if(!W) return;
+  ERAS.forEach(e=>{placeBand(e,S,W,e.n,e.n.slice(0,1));e.el.classList.toggle('on',state.zoom===e.id);});
+  PERIODS.forEach(p=>{placeBand(p,S,W,p.n,p.sh);p.el.classList.toggle('on',state.per===p.id);});
+  VEG.forEach(v=>placeBand(v,S,W,v.n,v.sh));
+
+  // 背景分区（仅“全部”视图）
+  $('zones').innerHTML=state.zoom==='all'
+    ?'<div class="zone pre" style="left:0;width:12%"></div><div class="zone" style="left:74%;width:26%"></div>':'';
+  const tk=ticks(S,W);
+  $('grid').innerHTML=tk.map(t=>'<div class="gl" style="left:'+(t.f*100)+'%"></div>').join('');
+  $('axis').innerHTML=tk.map(t=>{
+    const c=t.x<24?' l':(t.x>W-24?' r':'');
+    return '<span class="tick'+c+'" style="left:'+(t.f*100)+'%">'+num(t.v,4)+'</span>';
+  }).join('');
+  EVENTS.forEach(e=>{if(e.xl){const f=X(e.t,S);e.xl.style.left=(f*100)+'%';e.xl.style.opacity=inView(f)?'':'0';}});
+  const sel=byId[state.sel],sf=X(sel.t,S);
+  $('selLine').style.left=(sf*100)+'%';$('selLine').style.opacity=inView(sf)?'':'0';
+
+  // 泳道：分行避让
+  LANES.forEach(l=>{
+    const on=state.lanes.has(l.id);l.row.hidden=!on;if(!on) return;
+    const items=EVENTS.filter(e=>e.l===l.id).map(e=>({e,f:X(e.t,S)}));
+    const occ=[[],[],[],[]];
+    const free=(row,a,b)=>row.every(([c,d])=>b<=c||a>=d);
+    let used=1;
+    items.filter(i=>inView(i.f)).sort((a,b)=>a.f-b.f).forEach(it=>{
+      const px=it.f*W,dot=[px-8,px+8],w=it.e.lw;
+      let side='r',lab=[px+8,px+10+w];
+      if(lab[1]>W-2){side='l';lab=[px-10-w,px-8];}
+      let r=-1,show=false;
+      for(let k=0;k<4;k++) if(free(occ[k],dot[0],dot[1])&&free(occ[k],lab[0],lab[1])&&lab[0]>=0){r=k;show=true;break;}
+      if(r<0) for(let k=0;k<4;k++) if(free(occ[k],dot[0],dot[1])){r=k;break;}
+      if(r<0) r=0;
+      occ[r].push(dot);if(show) occ[r].push(lab);
+      used=Math.max(used,r+1);it.r=r;it.show=show;it.side=side;
+    });
+    l.track.style.height=(used*22+14)+'px';
+    items.forEach(it=>{
+      const b=it.e.el,vis=inView(it.f);
+      b.style.left=(it.f*100)+'%';
+      if(vis) b.style.top=(18+it.r*22)+'px';
+      b.classList.toggle('off',!vis);b.tabIndex=vis?0:-1;
+      b.classList.toggle('nolbl',vis&&!it.show);
+      b.classList.toggle('left',it.side==='l');
+      b.classList.toggle('on',it.e.id===state.sel);
+      b.setAttribute('aria-pressed',it.e.id===state.sel?'true':'false');
+    });
+  });
+
+  if(state.zoom==='all'){
+    const mid=(ALL[1].x1-ALL[1].x0)/(ALL[1].a-ALL[1].b);
+    const pre=(ALL[0].x1-ALL[0].x0)/(ALL[0].a-ALL[0].b);
+    const cz=(ALL[2].x1-ALL[2].x0)/(ALL[2].a-ALL[2].b);
+    $('zoneText').textContent='阴影区：前寒武纪压缩约 '+Math.round(mid/pre)+' 倍，新生代放大约 '+Math.round(cz/mid)+' 倍';
+    $('zoneNote').hidden=false;
+  } else $('zoneNote').hidden=true;
+}
+
+// ---------- 卡片与清单 ----------
+function renderCards(){
+  const e=byId[state.sel];
+  const dl=$('dLane');dl.style.setProperty('--lc',e.x?'var(--ext)':'var(--c-'+e.l+')');dl.lastChild.textContent=laneName[e.l];
+  const dp=$('dPer');dp.firstChild.style.background=e.per.c;dp.lastChild.textContent=e.per.n;dp.title='查看'+e.per.n+'并放大';
+  $('dName').textContent=e.n;$('dSci').textContent=e.s||'';
+  $('dAgo').textContent=fmtAgo(e.t);$('dMa').textContent=fmtMa(e.t);
+  $('dDesc').textContent=e.d;$('dPlace').textContent=e.w?'化石产地：'+e.w:'';
+  const list=ordered(),i=list.findIndex(x=>x.id===e.id);
+  $('pos').textContent=(i+1)+' / '+list.length;
+  $('prev').disabled=i<=0;$('next').disabled=i>=list.length-1;
+
+  const p=byPer[state.per];
+  const sw=$('pSw');sw.style.background=p.c;sw.style.color=textOn(p.c);sw.textContent=p.sh;
+  $('pName').innerHTML='';$('pName').append(p.n);
+  const sm=document.createElement('small');sm.textContent=p.en;$('pName').append(sm);
+  $('pRange').textContent=fmtRange(p.s,p.e)+' · 持续约 '+fmtAbs(p.s-p.e)+'年';
+  $('pNote').textContent=p.note||'';
+  $('pFlora').textContent=p.fl;$('pFauna').textContent=p.fa;$('pClimate').textContent=p.cl;
+  const inP=list.filter(x=>x.per.id===p.id);
+  $('pChips').innerHTML=inP.length?inP.map(x=>'<button type="button" data-id="'+x.id+'" style="--lc:'+(x.x?'var(--ext)':'var(--c-'+x.l+')')+'"'+(x.id===state.sel?' aria-current="true"':'')+'><i></i>'+x.n+'</button>').join(''):'<span style="font-size:13px;color:var(--muted)">当前筛选下没有节点</span>';
+}
+function renderList(){
+  const S=segsFor(state.zoom);
+  const evs=ordered().filter(e=>inView(X(e.t,S)));
+  const scope=state.zoom==='all'?'全部 45 亿年':rangeOf(state.zoom).n;
+  $('listSub').textContent='当前范围：'+scope+' · '+evs.length+' 个节点（随上方范围和类群筛选变化）';
+  const groups=[];
+  evs.forEach(e=>{let g=groups[groups.length-1];if(!g||g.p!==e.per){g={p:e.per,items:[]};groups.push(g);}g.items.push(e);});
+  $('groups').innerHTML=groups.map(g=>
+    '<div class="group"><div class="ghead"><i style="background:'+g.p.c+'"></i>'+g.p.n+'<small>'+fmtRange(g.p.s,g.p.e)+'</small></div><ul class="rows">'+
+    g.items.map(e=>'<li><button type="button" class="rowbtn'+(e.x?' x':'')+(e.id===state.sel?' on':'')+'" data-id="'+e.id+'" style="--lc:var(--c-'+e.l+')"><span class="t">'+fmtAbs(e.t)+'年前</span><i></i><span>'+e.n+(e.s?'<span class="s">'+e.s+'</span>':'')+'</span></button></li>').join('')+
+    '</ul></div>').join('');
+}
+function renderControls(){
+  document.querySelectorAll('#seg button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.z===state.zoom?'true':'false'));
+  document.querySelectorAll('#chips .chip').forEach(b=>b.setAttribute('aria-pressed',state.lanes.has(b.dataset.l)?'true':'false'));
+  const r=state.zoom==='all'?null:rangeOf(state.zoom);
+  $('viewlabel').innerHTML=r?'显示范围：<b>'+r.n+'</b>（'+fmtRange(r.s,r.e)+'）':'显示范围：<b>全部</b>（约 45.7 亿年前 — 今天）';
+}
+function update(){renderControls();layout();renderCards();renderList();}
+
+// ---------- 交互 ----------
+function reveal(e){
+  const wrap=$('tlwrap');if(wrap.scrollWidth<=wrap.clientWidth+2) return;
+  const W=$('axis').clientWidth,lw=$('axis').offsetLeft;
+  const px=lw+X(e.t,segsFor(state.zoom))*W;
+  if(px<wrap.scrollLeft+lw+20||px>wrap.scrollLeft+wrap.clientWidth-20)
+    wrap.scrollTo({left:Math.max(0,px-wrap.clientWidth/2),behavior:reduce?'auto':'smooth'});
+}
+function select(id,opt){
+  const e=byId[id];state.sel=id;state.per=e.per.id;
+  if(!inView(X(e.t,segsFor(state.zoom)))) state.zoom=isPeriod(state.zoom)?e.per.id:'all';
+  update();if(opt&&opt.reveal) reveal(e);
+}
+function step(d,focus){
+  const list=ordered(),i=list.findIndex(x=>x.id===state.sel),n=list[i+d];
+  if(!n) return;select(n.id,{reveal:true});
+  if(focus&&document.activeElement&&document.activeElement.classList.contains('ev')) n.el.focus({preventScroll:true});
+}
+function zoomTo(z){state.zoom=z;update();}
+function pickPeriod(pid){
+  state.zoom=pid;state.per=pid;
+  if(byId[state.sel].per.id!==pid){const f=ordered().find(e=>e.per.id===pid);if(f) state.sel=f.id;}
+  update();
+}
+function toggleLane(id){
+  if(state.lanes.has(id)){if(state.lanes.size===1) return;state.lanes.delete(id);}else state.lanes.add(id);
+  const cur=byId[state.sel];
+  if(!state.lanes.has(cur.l)){
+    const near=ordered().reduce((b,e)=>!b||Math.abs(e.t-cur.t)<Math.abs(b.t-cur.t)?e:b,null);
+    if(near){state.sel=near.id;state.per=near.per.id;}
+  }
+  update();
+}
+
+build();update();
+if(window.ResizeObserver) new ResizeObserver(()=>layout()).observe($('axis'));
+else addEventListener('resize',layout);
+if(document.fonts&&document.fonts.ready) document.fonts.ready.then(()=>{EVENTS.forEach(e=>e.lw=tw(e.n,12)+12);layout();});
+})();
+</script>
+</body>
+</html>

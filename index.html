@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>生命演化长卷</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Noto+Sans+SC:wght@400;500;700&family=Noto+Serif+SC:wght@600;900&display=swap">
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="art.css">
+</head>
+<body>
+<div class="page">
+  <header>
+    <p class="eyebrow">GEOLOGIC TIME × 生物类群</p>
+    <h1>生命演化长卷</h1>
+    <p class="lede">从约 45 亿年前地球形成，到智人走遍世界。沿着国际地质年代表的色带，看植被如何从海洋藻类走向森林与草原，看三叶虫、鱼类、两栖类、恐龙、鸟类和哺乳动物一步步登场，也看五次大灭绝怎样改写赢家名单。每个节点都配有复原插图、体型对比、详细说明，以及可直接跳转观看的科普视频和百科资料。</p>
+    <ul class="stats" id="stats"></ul>
+    <div class="march-wrap"><div class="march" id="march" aria-label="生命行进：点击任一生物查看详情"></div></div>
+  </header>
+
+  <div class="controls">
+    <div class="seg" id="seg" role="group" aria-label="时间范围"></div>
+    <div class="search" id="search">
+      <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6.5 1a5.5 5.5 0 0 1 4.4 8.8l4 4-1.2 1.2-4-4A5.5 5.5 0 1 1 6.5 1zm0 2a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7z"/></svg>
+      <input id="q" type="search" placeholder="搜索物种或事件，如 霸王龙、Trilobite" autocomplete="off" aria-label="搜索物种或事件" aria-controls="qres" aria-expanded="false" role="combobox">
+      <kbd>/</kbd>
+      <ul class="qres" id="qres" role="listbox" hidden></ul>
+    </div>
+    <div class="chips" id="chips" role="group" aria-label="显示的类群"></div>
+  </div>
+  <p class="viewlabel" id="viewlabel"></p>
+
+  <div class="tl-wrap" id="tlwrap">
+    <div class="tl" id="tl">
+      <div class="row era-row"><div class="rl">代</div><div class="track" id="eraTrack"></div></div>
+      <div class="row per-row"><div class="rl">宙 / 纪</div><div class="track" id="perTrack"></div></div>
+      <div class="row veg-row"><div class="rl">主导植被</div><div class="track" id="vegTrack"></div></div>
+      <div class="lanes" id="lanes"><div class="overlay"><div id="zones"></div><div id="grid"></div><div id="xlines"></div><div class="sl" id="selLine"></div></div></div>
+      <div class="row axis-row"><div class="rl">百万年前</div><div class="track" id="axis"></div></div>
+    </div>
+  </div>
+  <div class="legend">
+    <span><i class="xs"></i>五次大灭绝</span>
+    <span id="zoneNote"><i class="hs"></i><span id="zoneText"></span></span>
+    <span>点击色带放大到该时期，点击圆点查看详情，键盘 ← → 逐个浏览</span>
+    <span class="hint">左右滑动查看完整时间轴</span>
+  </div>
+
+  <div class="panes">
+    <article class="card detail" id="detail" aria-live="polite">
+      <figure class="plate" id="dPlate"><figcaption id="dCap">复原图</figcaption><figcaption class="pno" id="dNo"></figcaption><div id="dArt"></div></figure>
+      <div class="tags"><span class="tag" id="dLane"><i></i><span></span></span><button class="tag per" id="dPer" type="button"><i></i><span></span></button></div>
+      <h2 id="dName"></h2>
+      <p class="sci" id="dSci"></p>
+      <div class="when"><b id="dAgo"></b><span id="dMa"></span></div>
+      <p class="desc" id="dDesc"></p>
+      <div class="size" id="dSize"></div>
+      <dl class="facts" id="dFacts"></dl>
+      <p class="place" id="dPlace"></p>
+      <button type="button" class="jump" id="jump"><i><svg viewBox="0 0 10 10"><path d="M1 0l9 5-9 5z"/></svg></i>观看科普视频 · 查百科<span id="jumpN"></span></button>
+      <div class="nav"><button type="button" id="prev">← 更早</button><span id="pos"></span><button type="button" id="next">更晚 →</button></div>
+    </article>
+    <div class="side">
+    <article class="card media" id="media" aria-live="polite">
+      <div class="mhead"><h3>科普视频</h3><span id="mName"></span></div>
+      <div class="vids" id="mVids"></div>
+      <div class="more" id="mMore"><span>找更多视频</span><a id="mBili" class="sbtn b" target="_blank" rel="noopener noreferrer">B站搜索</a><a id="mYt" class="sbtn y" target="_blank" rel="noopener noreferrer">YouTube 搜索</a></div>
+      <div class="wiki"><span>百科资料</span><div id="mWiki"></div></div>
+      <p class="mnote">视频与百科来自第三方网站，点击后在新标签页打开。</p>
+    </article>
+    <article class="card period" id="period">
+      <div class="scenebox" id="pScene"></div>
+      <div class="phead"><div class="swatch" id="pSw"></div><div><h2 id="pName"></h2><p class="range" id="pRange"></p></div></div>
+      <p class="pnote" id="pNote"></p>
+      <p class="travel"><b>如果你穿越回去</b><span id="pTravel"></span></p>
+      <dl class="pdl">
+        <div><dt class="veg-dt">植被</dt><dd id="pFlora"></dd></div>
+        <div><dt>动物</dt><dd id="pFauna"></dd></div>
+        <div><dt>气候</dt><dd id="pClimate"></dd></div>
+      </dl>
+      <div class="pchips"><p>本时期节点</p><div id="pChips"></div></div>
+    </article>
+    </div>
+  </div>
+
+  <section class="gallery">
+    <p class="kicker">ILLUSTRATED ATLAS</p>
+    <h2 class="sec">物种图鉴</h2>
+    <p class="sub" id="gallerySub"></p>
+    <div id="groups"></div>
+  </section>
+
+  <section class="treesec">
+    <p class="kicker">TREE OF LIFE</p>
+    <h2 class="sec">生命之树</h2>
+    <p class="sub">各大类群何时分道扬镳。横轴为对数时间，越靠右越接近今天；虚线结尾表示该类群已经灭绝。分化时间为约数，综合了化石与分子钟研究。</p>
+    <div class="tree-wrap" id="treeWrap"></div>
+  </section>
+
+  <footer>年代划分与色带配色依据国际地层委员会《国际年代地层表》；化石与事件年代均为近似值，不同研究可能相差数百万年。所有插图为示意性复原，颜色多为推测。“全部”视图中前寒武纪按比例压缩、新生代按比例放大，其余时期为线性比例。</footer>
+</div>
+<div class="peek" id="peek" aria-hidden="true"></div>
+<button type="button" class="totop" id="totop" aria-label="回到顶部" hidden><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3l6 6-1.4 1.4L9 6.8V14H7V6.8L3.4 10.4 2 9z"/></svg></button>
+
+<script src="js/artkit.js"></script>
+<script src="js/art-dino.js"></script>
+<script src="js/art-mamm.js"></script>
+<script src="js/art-fish.js"></script>
+<script src="js/art-rept.js"></script>
+<script src="js/art-bird.js"></script>
+<script src="js/art-human.js"></script>
+<script src="js/art-inv.js"></script>
+<script src="js/art-plant.js"></script>
+<script src="js/art-earth.js"></script>
+<script src="js/art-life.js"></script>
+<script src="js/data1.js"></script>
+<script src="js/data2.js"></script>
+<script src="js/data3.js"></script>
+<script src="js/media.js"></script>
+<script src="js/tree.js"></script>
+<script src="js/scenes.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
