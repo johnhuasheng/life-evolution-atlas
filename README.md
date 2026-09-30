@@ -4,7 +4,31 @@
 
 这是一个中文静态科普网页作品。页面以地质年代色带为骨架，将主导植被、12 条类群线、149 个演化节点、程序化 SVG 插图、时期景观、体型对比、科普资料入口和生命之树连接起来。既可以按年代从早到晚阅读，也可以直接搜索自己感兴趣的生物或事件。
 
-无需安装前端依赖、注册账号或连接后端，下载后用浏览器打开即可体验。
+无需安装前端依赖、注册账号或连接后端：**点开下方的在线链接就能直接使用**，也可以下载到本地离线浏览。
+
+<p align="center">
+  <a href="https://johnhuasheng.github.io/life-evolution-atlas/"><img alt="在线演示" src="https://img.shields.io/badge/%E5%9C%A8%E7%BA%BF%E6%BC%94%E7%A4%BA-GitHub%20Pages-2ea44f?style=for-the-badge&logo=github"></a>
+  <a href="https://raw.githack.com/johnhuasheng/life-evolution-atlas/main/index.html"><img alt="备用在线链接" src="https://img.shields.io/badge/%E5%A4%87%E7%94%A8%E9%93%BE%E6%8E%A5-%E7%82%B9%E5%87%BB%E5%8D%B3%E7%94%A8-1C5B4E?style=for-the-badge"></a>
+  <a href="https://raw.githack.com/johnhuasheng/life-evolution-atlas/main/%E7%94%9F%E5%91%BD%E6%BC%94%E5%8C%96%E9%95%BF%E5%8D%B7_%E5%8D%95%E6%96%87%E4%BB%B6.html"><img alt="单文件在线版" src="https://img.shields.io/badge/%E5%8D%95%E6%96%87%E4%BB%B6%E7%89%88-%E5%9C%A8%E7%BA%BF%E6%89%93%E5%BC%80-6A5ACD?style=for-the-badge"></a>
+</p>
+
+## 在线体验（点开即用，无需下载）
+
+| 入口 | 链接 | 说明 |
+| --- | --- | --- |
+| **在线演示（推荐）** | **<https://johnhuasheng.github.io/life-evolution-atlas/>** | GitHub Pages 正式网址，打开即是完整网页 |
+| 备用在线链接 | [https://raw.githack.com/johnhuasheng/life-evolution-atlas/main/index.html](https://raw.githack.com/johnhuasheng/life-evolution-atlas/main/index.html) | 直接从本仓库读取最新文件，无需任何设置即可使用 |
+| 单文件在线版 | [生命演化长卷_单文件.html（在线打开）](https://raw.githack.com/johnhuasheng/life-evolution-atlas/main/%E7%94%9F%E5%91%BD%E6%BC%94%E5%8C%96%E9%95%BF%E5%8D%B7_%E5%8D%95%E6%96%87%E4%BB%B6.html) | 所有样式、脚本、插图合在一个文件里 |
+
+**直接跳到某个节点**（在网址后加 `#插图名`）：
+
+- 霸王龙：<https://johnhuasheng.github.io/life-evolution-atlas/#trex>
+- 风神翼龙：<https://johnhuasheng.github.io/life-evolution-atlas/#quetzal>
+- 三叶虫：<https://johnhuasheng.github.io/life-evolution-atlas/#trilobite>
+- 始祖鸟：<https://johnhuasheng.github.io/life-evolution-atlas/#archaeopteryx>
+- 智人出现：<https://johnhuasheng.github.io/life-evolution-atlas/#sapiens>
+
+> 手机、平板、电脑的浏览器都能直接打开。页面中的科普视频会跳转到 B站 / YouTube 观看，百科链接跳转到维基百科 / 百度百科。
 
 ![生命演化长卷首页与交互式时间轴](docs/images/overview.png)
 
@@ -25,6 +49,10 @@
 以上数量根据本次上传版本的实际数据统计。视频数量指配置中的链接条目，包含部分相关主题的视频；其余节点会提供搜索入口。
 
 ## 快速开始
+
+### 方式零：在线打开（最简单）
+
+直接访问 **<https://johnhuasheng.github.io/life-evolution-atlas/>**，不需要下载任何文件。如果该地址暂时打不开，可使用上方的“备用在线链接”。
 
 ### 方式一：下载整个项目
 
@@ -187,6 +215,7 @@ life-evolution-atlas/
 ├─ style.css                     主页面、时间轴、卡片与响应式样式
 ├─ art.css                       插图通用样式
 ├─ README.md                     GitHub 项目介绍与使用指南
+├─ .nojekyll                     让 GitHub Pages 原样发布全部文件
 ├─ 项目说明.md                   原有本地使用与修改说明
 ├─ 打开网页.bat                  Windows 快捷打开入口
 ├─ 生命演化长卷_单文件.html       已打包的独立网页
@@ -208,6 +237,22 @@ life-evolution-atlas/
    ├─ 生命演化长卷_第一版.html   历史版本
    └─ 第二版插图/               历史插图脚本，当前页面不加载
 ```
+
+## 复刻并发布你自己的在线版
+
+这个项目是纯静态网页，没有构建步骤，复刻后几分钟就能拥有自己的在线网址：
+
+1. 点击仓库右上角 **Fork**，把项目复制到自己的 GitHub 账号下（或下载 ZIP 后新建仓库上传全部文件）。
+2. 在你的仓库中打开 **Settings → Pages**。
+3. **Build and deployment → Source** 选择 **Deploy from a branch**；**Branch** 选择 `main`，文件夹选择 `/ (root)`，点击 **Save**。
+4. 等待 1～2 分钟，页面顶部会显示网址：`https://你的用户名.github.io/仓库名/`，打开即可访问。
+5. 之后修改任何文件并提交，网站会自动更新。
+
+仓库根目录的 `.nojekyll` 文件用于让 GitHub Pages 原样发布所有文件（包括中文文件名），请保留。
+
+**不想开 GitHub Pages？** 也可以用 `https://raw.githack.com/你的用户名/仓库名/main/index.html` 的形式直接在线打开任意公开仓库中的网页。
+
+其他可选托管方式：把整个文件夹拖进 [Netlify Drop](https://app.netlify.com/drop)，或导入到 [Vercel](https://vercel.com/new) / [Cloudflare Pages](https://pages.cloudflare.com/)，均无需任何构建设置（构建命令留空，输出目录为根目录）。
 
 ## 修改与扩展
 
